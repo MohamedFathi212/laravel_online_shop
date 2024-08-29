@@ -38,6 +38,7 @@ Route::group(['prefix'=> 'admin'], function () {
         Route::get('/logout', [HomeController::class,'logout'])->name('admin.logout');
 
         // Categories
+        Route::get('/categories', [CategoryController::class,'index'])->name('categories.index');
         Route::get('/categories/create', [CategoryController::class,'create'])->name('categories.create');
         Route::post('/categories', [CategoryController::class,'store'])->name('categories.store');
 
@@ -54,7 +55,6 @@ Route::group(['prefix'=> 'admin'], function () {
                 'slug' => $slug,
             ]);
         })->name('getSlug');
-
     });
 
 });

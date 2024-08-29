@@ -10,8 +10,16 @@ use App\Models\Category;
 
 class CategoryController extends Controller
 {
-    public function index(){
+    public function index(Request $request){
 
+        $categories = Category::latest();
+
+        if(!empty($request->get('keyword'))){
+            $categories = $categories->where('name','like','%'.$request->get('keyword').'%');
+        }
+
+        $categories = $categories->paginate(10);
+        return view('admin.category.list',compact('categories'));
     }
 
 
@@ -24,27 +32,32 @@ class CategoryController extends Controller
         $validator = Validator::make($request->all(),[
             'name'=> 'required',
             'slug' => 'required|unique:categories',
+            'status' => 'required|in:0,1',
         ]);
 
         if ($validator->passes()){
-            $category =  new Category();
+            $category = new Category();
             $category->name = $request->name;
             $category->slug = $request->slug;
             $category->status = $request->status;
             $category->save();
-            $request->session()->flash('success','Category added succ');
+
+            $request->session()->flash('success', 'Category added successfully');
+
             return response()->json([
                 'status' => true,
-                'message' =>'Category Added Successfully'
+                'errors' => 'Category added successfully'
             ]);
-        }else{
+            
+        } else {
             return response()->json([
                 'status' => false,
-                'errors' =>$validator->errors()
+                'errors' => $validator->errors()
             ]);
         }
-
     }
+
+
 
     public function edit(){
 
@@ -57,6 +70,3 @@ class CategoryController extends Controller
 
 
 }
-
-
-
